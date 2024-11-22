@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Switch, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 
-const SettingsScreen = () => {
+export default SettingsScreen = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(true);
 
@@ -77,4 +77,3 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SettingsScreen;

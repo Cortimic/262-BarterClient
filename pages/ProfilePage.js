@@ -17,7 +17,7 @@ const ProfilePage = ({ route, navigation }) => {
           <Image source={exampleImage} style={styles.userImage} /> {/* Need to add profile picture from database */} </View>
 
         <View style={styles.settingsIconContainer}>
-        <TouchableOpacity onPress={() => navigation.navigate('ItemPage')} > 
+        <TouchableOpacity onPress={() => navigation.navigate('SettingsScreen')} > 
           <Icon name="settings" size={30} color="#000" /> 
         </TouchableOpacity>
         </View>
