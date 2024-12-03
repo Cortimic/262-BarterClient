@@ -20,8 +20,13 @@ export default function ItemSelectionScreen({ navigation }) {
     const handleContinue = () => {
         const selected = Object.keys(selectedItems).filter((item) => selectedItems[item]);
         if (selected.length > 0) {
-            navigation.replace('Dashboard');
-        } else {
+            navigation.navigate('Dashboard', {
+                userItems: userItems,  // Your list of user items
+                marketItems: marketItems,  // Your list of market items
+                username: 'JohnDoe',  // Pass other parameters as needed
+                initialPage: 'Market',  // Initial page to show in the Tab Navigator
+            });
+        } else { 
             alert('Please select at least one item.');
         }
     };

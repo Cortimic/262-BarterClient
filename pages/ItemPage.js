@@ -1,185 +1,155 @@
 import React, { useState } from 'react';
-import { Text, View, StyleSheet, TextInput, Button, FlatList, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
-export default ItemPage = ({ username }) => {
-    const [itemName, setItemName] = useState('');
-    const [itemDescription, setItemDescription] = useState('');
-    const [itemList, setItemList] = useState([]);
-    const [editingItem, setEditingItem] = useState(null);
+export default function ItemPage() {
     const navigation = useNavigation();
     const route = useRoute();
 
-    // Check if navigated from ItemSelectionScreen
-    const fromItemSelection = route.params?.fromItemSelection;
+    const { username, userItems = [] } = route.params || {}; // Fetch data from route params
+    const [itemList, setItemList] = useState(userItems);
 
-    const handleAddItem = () => {
-        if (itemName.trim() && itemDescription.trim()) {
-            if (editingItem) {
-                setItemList((prevList) => prevList.map(item =>
-                    item.id === editingItem.id ? { ...item, name: itemName, description: itemDescription } : item
-                ));
-                setEditingItem(null);
-            } else {
-                const newItem = {
-                    id: Date.now().toString(),
-                    name: itemName,
-                    description: itemDescription,
-                };
-                setItemList((prevList) => [...prevList, newItem]);
-            }
-            setItemName('');
-            setItemDescription('');
-        } else {
-            alert('Please enter both item name and description');
-        }
-    };
-
-    const handleSkip = () => {
-        navigation.navigate('Dashboard', { username: 'Guest', initialPage: 'Items' });
+    const formatDate = (isoDate) => {
+        const date = new Date(isoDate);
+        return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
     };
 
     const renderItem = ({ item }) => (
         <TouchableOpacity style={styles.itemTouchable} onPress={() => handleNavigateToDetail(item)}>
             <View style={styles.itemContainer}>
-                <Text style={styles.itemName}>{item.name}</Text>
-                <Text style={styles.itemDescription}>{item.description}</Text>
-                <Button title="Edit" onPress={() => handleEditItem(item)} />
+                <Text style={styles.itemName}>{item.itemname}</Text>
+                <Text style={styles.itemDescription}>{item.itemdescription}</Text>
+                <Text style={styles.itemLocation}>
+                    Location: ({item.itemlocation.x}, {item.itemlocation.y})
+                </Text>
+                <Text style={styles.itemDate}>Posted on: {formatDate(item.dateposted)}</Text>
+                <Text style={styles.itemTags}>
+                    Tags: {item.itemtags.join(', ')}
+                </Text>
+                <Text style={styles.lookingForTags}>
+                    Looking For: {item.lookingfortags.join(', ')}
+                </Text>
             </View>
         </TouchableOpacity>
     );
 
+    const handleNavigateToDetail = (item) => {
+        navigation.navigate('ItemDetail', { item });
+    };
+
     return (
         <View style={styles.container}>
-            <Text style={styles.welcomeText}>Welcome, {username}</Text>
-            <Text style={styles.subtitleText}>Item Addition</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Enter item name"
-                value={itemName}
-                onChangeText={setItemName}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Enter item description"
-                value={itemDescription}
-                onChangeText={setItemDescription}
-            />
-            <Button title={editingItem ? "Update Item" : "Add Item"} onPress={handleAddItem} />
-
-            {/* Conditionally render the Skip button */}
-            {fromItemSelection && (
-                <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
-                    <Text style={styles.skipButtonText}>Skip</Text>
-                </TouchableOpacity>
+            <Text style={styles.welcomeText}>Welcome, {username || 'Guest'}</Text>
+            {itemList.length > 0 ? (
+                <>
+                    <Text style={styles.itemsTitle}>Your Items:</Text>
+                    <FlatList
+                        data={itemList}
+                        renderItem={renderItem}
+                        keyExtractor={(item) => item.itemid.toString()}
+                        style={styles.list}
+                    />
+                </>
+            ) : (
+                <Text style={styles.emptyListText}>No items to display.</Text>
             )}
-
-            {itemList.length > 0 && <Text style={styles.itemsTitle}>Your Items:</Text>}
-
-            <FlatList
-                data={itemList}
-                renderItem={renderItem}
-                keyExtractor={(item) => item.id}
-                style={styles.list}
-                ListEmptyComponent={<Text style={styles.emptyListText}>No items added yet.</Text>}
-            />
         </View>
     );
-};
+}
 
-const marketItems = [
-    //Contains dummy market data
-    {
-        img: "image.jpg",
-        name: "Item1",
-        desc: "This is the description of item 1",
-        location: "49546",
-        lookingFor: ["furniture", "appliances", "decor"],
-        owner: "User1",
-        postedDate: "10-21-2024",
-        tags: ["furniture", "electronics"]
-    },
-    {
-        img: "exampleImage.jpg",
-        name: "Item2",
-        desc: "This is the description of item 2",
-        location: "90210",
-        lookingFor: ["furniture", "electronics", "kitchenware"],
-        owner: "User2",
-        postedDate: "10-15-2024",
-        tags: ["appliances", "furniture"]
-    },
-    {
-        img: "anotherImage.png",
-        name: "Item3",
-        desc: "This is the description of item 3",
-        location: "30301",
-        lookingFor: ["books", "furniture", "decor"],
-        owner: "User3",
-        postedDate: "09-30-2024",
-        tags: ["books", "decor"]
-    },
-    {
-        img: "item4.jpg",
-        name: "Item4",
-        desc: "This is the description of item 4",
-        location: "60614",
-        lookingFor: ["furniture", "decor"],
-        owner: "User4",
-        postedDate: "10-10-2024",
-        tags: ["furniture", "toys"]
-    },
-    {
-        img: "item5.jpg",
-        name: "Item5",
-        desc: "This is the description of item 5",
-        location: "77005",
-        lookingFor: ["furniture", "appliances"],
-        owner: "User5",
-        postedDate: "09-25-2024",
-        tags: ["appliances", "kitchenware"]
-    },
-    {
-        img: "item6.png",
-        name: "Item6",
-        desc: "This is the description of item 6",
-        location: "33101",
-        lookingFor: ["appliances", "electronics", "furniture"],
-        owner: "User6",
-        postedDate: "10-05-2024",
-        tags: ["appliances", "furniture"]
-    },
-    {
-        img: "item7.png",
-        name: "Item7",
-        desc: "This is the description of item 7",
-        location: "80202",
-        lookingFor: ["furniture", "decor"],
-        owner: "User7",
-        postedDate: "10-08-2024",
-        tags: ["decor", "books"]
-    },
-    {
-        img: "item8.jpg",
-        name: "Item8",
-        desc: "This is the description of item 8",
-        location: "98101",
-        lookingFor: ["kitchenware", "furniture", "decor"],
-        owner: "User8",
-        postedDate: "09-28-2024",
-        tags: ["kitchenware", "furniture"]
-    },
-    {
-        img: "item9.jpg",
-        name: "Item9",
-        desc: "This is the description of item 9",
-        location: "15213",
-        lookingFor: ["books", "decor"],
-        owner: "User9",
-        postedDate: "10-12-2024",
-        tags: ["books", "decor"]
-    }
-];
+// const marketItems = [
+//     //Contains dummy market data
+//     {
+//         img: "image.jpg",
+//         name: "Item1",
+//         desc: "This is the description of item 1",
+//         location: "49546",
+//         lookingFor: ["furniture", "appliances", "decor"],
+//         owner: "User1",
+//         postedDate: "10-21-2024",
+//         tags: ["furniture", "electronics"]
+//     },
+//     {
+//         img: "exampleImage.jpg",
+//         name: "Item2",
+//         desc: "This is the description of item 2",
+//         location: "90210",
+//         lookingFor: ["furniture", "electronics", "kitchenware"],
+//         owner: "User2",
+//         postedDate: "10-15-2024",
+//         tags: ["appliances", "furniture"]
+//     },
+//     {
+//         img: "anotherImage.png",
+//         name: "Item3",
+//         desc: "This is the description of item 3",
+//         location: "30301",
+//         lookingFor: ["books", "furniture", "decor"],
+//         owner: "User3",
+//         postedDate: "09-30-2024",
+//         tags: ["books", "decor"]
+//     },
+//     {
+//         img: "item4.jpg",
+//         name: "Item4",
+//         desc: "This is the description of item 4",
+//         location: "60614",
+//         lookingFor: ["furniture", "decor"],
+//         owner: "User4",
+//         postedDate: "10-10-2024",
+//         tags: ["furniture", "toys"]
+//     },
+//     {
+//         img: "item5.jpg",
+//         name: "Item5",
+//         desc: "This is the description of item 5",
+//         location: "77005",
+//         lookingFor: ["furniture", "appliances"],
+//         owner: "User5",
+//         postedDate: "09-25-2024",
+//         tags: ["appliances", "kitchenware"]
+//     },
+//     {
+//         img: "item6.png",
+//         name: "Item6",
+//         desc: "This is the description of item 6",
+//         location: "33101",
+//         lookingFor: ["appliances", "electronics", "furniture"],
+//         owner: "User6",
+//         postedDate: "10-05-2024",
+//         tags: ["appliances", "furniture"]
+//     },
+//     {
+//         img: "item7.png",
+//         name: "Item7",
+//         desc: "This is the description of item 7",
+//         location: "80202",
+//         lookingFor: ["furniture", "decor"],
+//         owner: "User7",
+//         postedDate: "10-08-2024",
+//         tags: ["decor", "books"]
+//     },
+//     {
+//         img: "item8.jpg",
+//         name: "Item8",
+//         desc: "This is the description of item 8",
+//         location: "98101",
+//         lookingFor: ["kitchenware", "furniture", "decor"],
+//         owner: "User8",
+//         postedDate: "09-28-2024",
+//         tags: ["kitchenware", "furniture"]
+//     },
+//     {
+//         img: "item9.jpg",
+//         name: "Item9",
+//         desc: "This is the description of item 9",
+//         location: "15213",
+//         lookingFor: ["books", "decor"],
+//         owner: "User9",
+//         postedDate: "10-12-2024",
+//         tags: ["books", "decor"]
+//     }
+// ];
 
 const styles = StyleSheet.create({
     container: {

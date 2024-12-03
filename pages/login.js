@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { AppContext } from '../App'; // Import the AppContext
 
 export default function Login({ navigation }) {
     const [username, setUsername] = useState('');
+    const { fetchData } = useContext(AppContext); // Access fetchData from the context
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
+        // Call fetchData before navigating to Dashboard
+        await fetchData();
         // Pass the username when navigating to the Dashboard
         navigation.replace('Dashboard', { username });
     };

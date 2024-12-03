@@ -8,9 +8,14 @@ const ItemDetail = ({ route, navigation }) => {
 
   useEffect(() => {
     if (interestedItems) {
-      setIsInterested(interestedItems.some(i => i.name === item.name));
+      setIsInterested(interestedItems.some(i => i.itemid === item.itemid));
     }
   }, [interestedItems, item]);
+
+  const formatDate = (isoDate) => {
+    const date = new Date(isoDate);
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  };
 
   if (!item) {
     return (
@@ -30,18 +35,26 @@ const ItemDetail = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Image source={item.img} style={styles.itemImage} />
-      <Text style={styles.itemName}>{item.name}</Text>
-      <Text style={styles.itemDescription}>{item.desc}</Text>
+      {item.img && <Image source={item.img} style={styles.itemImage} />}
+      <Text style={styles.itemName}>{item.itemname}</Text>
+      <Text style={styles.itemDescription}>{item.itemdescription}</Text>
+      <Text style={styles.itemLocation}>
+        Location: ({item.itemlocation.x}, {item.itemlocation.y})
+      </Text>
+      <Text style={styles.itemTags}>Tags: {item.itemtags.join(', ')}</Text>
+      <Text style={styles.lookingForTags}>
+        Looking For: {item.lookingfortags.join(', ')}
+      </Text>
+      <Text style={styles.itemDate}>Posted on: {formatDate(item.dateposted)}</Text>
       <TouchableOpacity
         style={[
           styles.interestedButton,
-          isInterested ? styles.interestedButtonActive : styles.interestedButtonInactive
+          isInterested ? styles.interestedButtonActive : styles.interestedButtonInactive,
         ]}
         onPress={handleInterested}
       >
         <Text style={styles.buttonText}>
-          Interested
+          {isInterested ? 'Not Interested' : 'Interested'}
         </Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
@@ -63,17 +76,39 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
+    textAlign: 'center',
   },
   itemDescription: {
     fontSize: 16,
     color: '#333',
-    marginBottom: 20,
+    marginBottom: 10,
     textAlign: 'center',
+  },
+  itemLocation: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  itemTags: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 5,
+  },
+  lookingForTags: {
+    fontSize: 14,
+    color: '#999',
+    marginBottom: 10,
+  },
+  itemDate: {
+    fontSize: 12,
+    color: '#888',
+    marginBottom: 15,
   },
   itemImage: {
     width: '90%',
-    height: "70%",
-    resizeMode: "stretch",
+    height: 200,
+    resizeMode: 'contain',
     marginBottom: 20,
   },
   interestedButton: {
@@ -86,25 +121,11 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#4ecdc4',
     backgroundColor: '#4ecdc4',
-    transform: [{ scale: 1 }], 
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 2,
-    
-    
   },
   interestedButtonInactive: {
     borderWidth: 2,
     borderColor: '#4ecdc4',
     backgroundColor: '#ebfafa',
-    transform: [{ scale: 0.97 }], 
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 4,
-    elevation: 5,
-    
-    
   },
   backButton: {
     backgroundColor: '#45aaf2',
@@ -113,21 +134,27 @@ const styles = StyleSheet.create({
     borderRadius: 25,
   },
   buttonText: {
-    color: '#000000',
+    color: '#000',
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
-    
   },
 });
-
 
 ItemDetail.propTypes = {
   route: PropTypes.shape({
     params: PropTypes.shape({
       item: PropTypes.shape({
-        name: PropTypes.string.isRequired,
-        description: PropTypes.string.isRequired,
+        itemid: PropTypes.number.isRequired,
+        itemname: PropTypes.string.isRequired,
+        itemdescription: PropTypes.string.isRequired,
+        itemlocation: PropTypes.shape({
+          x: PropTypes.number.isRequired,
+          y: PropTypes.number.isRequired,
+        }).isRequired,
+        dateposted: PropTypes.string.isRequired,
+        itemtags: PropTypes.arrayOf(PropTypes.string).isRequired,
+        lookingfortags: PropTypes.arrayOf(PropTypes.string).isRequired,
       }).isRequired,
       toggleInterested: PropTypes.func.isRequired,
       interestedItems: PropTypes.array.isRequired,

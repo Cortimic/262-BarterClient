@@ -11,7 +11,8 @@ import MessagingPage from './MessagingPage';
 const Tab = createBottomTabNavigator();
 
 export default function Dashboard({ route }) {
-    // Extract the username from the navigation route parameters
+    // Extract params from route
+    const { userItems, marketItems } = route.params || {};
     const { username = 'Guest', initialPage = 'Market' } = route.params || {};
 
     return (
@@ -21,32 +22,32 @@ export default function Dashboard({ route }) {
             tabBarActiveTintColor: '#1ABC9C',
             tabBarInactiveTintColor: '#fff',
             tabBarHideOnKeyboard: true
-        }}
-        >
-
-            <Tab.Screen name="Market" component={Market} 
-            options={{ 
-                tabBarIcon: 
-                ({ focused, color, size }) => 
-                <Icon focused={focused} name='store' size={size} color={color} /> 
-            }}
+        }}>
+            <Tab.Screen name="Market" 
+                children={() => <Market userItems={userItems} marketItems={marketItems} />} 
+                options={{ 
+                    tabBarIcon: ({ focused, color, size }) => 
+                    <Icon focused={focused} name='store' size={size} color={color} /> 
+                }} 
             />
 
             <Tab.Screen name="Chats" component={MessagingPage}
-            options={{ tabBarIcon: 
-                ({ focused, color, size }) => 
-                <Icon focused={focused} name='chat' size={size} color={color} /> 
-            }}/>
+                options={{ 
+                    tabBarIcon: ({ focused, color, size }) => 
+                    <Icon focused={focused} name='chat' size={size} color={color} /> 
+                }} 
+            />
 
             <Tab.Screen name="Profile" component={ProfilePage}
-            options={{ tabBarIcon: 
-                ({ focused, color, size }) => 
-                <Icon focused={focused} name='person' size={size} color={color} /> 
-            }}/>
-
+                options={{ 
+                    tabBarIcon: ({ focused, color, size }) => 
+                    <Icon focused={focused} name='person' size={size} color={color} /> 
+                }} 
+            />
         </Tab.Navigator>
     );
 }
+
 
 const styles = StyleSheet.create({
     container: {
