@@ -3,10 +3,11 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ChatPage from './ChatPage';
 import TradePage from './tradePage';
+import PropTypes from 'prop-types';
 
 const Stack = createNativeStackNavigator();
 
-export default MessagingPage = () => {
+const MessagingPage = () => {
     // Contains the stack navigator for the home screen to allow for navigation to the chatDetail page
     return (
         <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
@@ -15,7 +16,7 @@ export default MessagingPage = () => {
             <Stack.Screen name="Trade" component={TradePage} />
         </Stack.Navigator>
     );
-}
+};
 
 const ChatsPage = ({ navigation }) => {
     const [showNotification, setShowNotification] = useState(true);
@@ -62,6 +63,13 @@ const ChatsPage = ({ navigation }) => {
     );
 };
 
+// PropTypes for ChatsPage
+ChatsPage.propTypes = {
+    navigation: PropTypes.shape({
+        navigate: PropTypes.func.isRequired,
+    }).isRequired,
+};
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -106,7 +114,6 @@ const styles = StyleSheet.create({
     {
         color: '#fff',
     },
-
     unselectedText:
     {
         color: '#000',
@@ -122,5 +129,6 @@ const chats = [
         user1: "Musa",
         user2: "Jack287"
     }
-]
+];
 
+export default MessagingPage;
