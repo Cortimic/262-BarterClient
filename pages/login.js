@@ -12,7 +12,7 @@ export default function Login({ navigation }) {
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={styles.container}>
-                <Image source={require('../assets/Logo.png')} style={styles.logo} />
+                <Image source={require('../assets/LogoTransparent.png')} style={styles.logo} />
 
                 <Text style={styles.title}>Welcome Back!</Text>
                 <Text style={styles.subtitle}>Login to continue</Text>
